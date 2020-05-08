@@ -32,7 +32,7 @@
             </div>
 
             <div class="ingredient-group" id="cheeses">
-                <h3>Choose your cheese(s):</h3>
+                <h3>Choose your cheese:</h3>
                 <div th:each="ingredient : ${cheese}">
                     <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
                     <span th:text="${ingredient.name}">INGREDIENT</span><br/>
@@ -58,7 +58,9 @@
         <div>
             <h3>Name your creation:</h3>
             <input type="text" th:field="*{name}" />
-
+            <span class="validationError"
+                  th:if="${#fields.hasErrors('name')}"
+                  th:errors="*{name}">Name Error</span>
             <br/>
 
             <button>Submit your Taco</button>

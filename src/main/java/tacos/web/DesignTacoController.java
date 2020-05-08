@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import tacos.Ingredient;
 import tacos.Order;
 import tacos.Taco;
-import tacos.Type;
+import tacos.Ingredient.Type;
 import tacos.data.IngredientRepository;
 import tacos.data.TacoRepository;
 
@@ -18,18 +18,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Controller
 @RequestMapping("/design")
 @SessionAttributes("order")
 public class DesignTacoController {
     private final IngredientRepository ingredientRepository;
-    private TacoRepository designRepo;
+    private TacoRepository tacoRepository;
 
     @Autowired
-    public DesignTacoController(final IngredientRepository ingredientRepository, final TacoRepository designRepo) {
+    public DesignTacoController(final IngredientRepository ingredientRepository, final TacoRepository tacoRepository) {
         this.ingredientRepository = ingredientRepository;
-        this.designRepo = designRepo;
+        this.tacoRepository = tacoRepository;
     }
 
     @ModelAttribute(name = "order")
@@ -37,8 +36,8 @@ public class DesignTacoController {
         return new Order();
     }
 
-    @ModelAttribute(name = "taco")
-    public Taco taco() {
+    @ModelAttribute(name = "design")
+    public Taco design() {
         return new Taco();
     }
 
@@ -47,7 +46,7 @@ public class DesignTacoController {
         List<Ingredient> ingredients = new ArrayList<>();
         ingredientRepository.findAll().forEach(ingredients::add);
 
-        Type[] types = Type.values();
+        Type[] types = Ingredient.Type.values();
         for (Type type : types) {
             model.addAttribute(type.toString().toLowerCase(),
                     filterByType(ingredients, type));
@@ -56,12 +55,12 @@ public class DesignTacoController {
     }
 
     @PostMapping
-    public String processDesign(@Valid Taco design, Errors errors, @ModelAttribute Order order) {
+    public String processDesign(@Valid Taco taco, Errors errors, @ModelAttribute Order order) {
         if(errors.hasErrors()) {
             return "design";
         }
 
-        Taco saved = designRepo.save(design);
+        Taco saved = tacoRepository.save(taco);
         order.addDesign(saved);
         return "redirect:/orders/current";
     }
