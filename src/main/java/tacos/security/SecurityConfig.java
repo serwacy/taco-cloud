@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.sql.DataSource;
 
@@ -22,6 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
               .usersByUsernameQuery(
                       "select username, password, enabled from Users where username=?")
               .authoritiesByUsernameQuery(
-                      "select username, authority from UserAuthorities where username=?");
+                      "select username, authority from UserAuthorities where username=?")
+              .passwordEncoder(new BCryptPasswordEncoder());
    }
 }
