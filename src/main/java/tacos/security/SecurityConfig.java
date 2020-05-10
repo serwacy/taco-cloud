@@ -13,17 +13,20 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-   @Autowired
-   DataSource dataSource;
 
    @Override
    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-      auth.jdbcAuthentication()
-              .dataSource(dataSource)
-              .usersByUsernameQuery(
-                      "select username, password, enabled from Users where username=?")
-              .authoritiesByUsernameQuery(
-                      "select username, authority from UserAuthorities where username=?")
-              .passwordEncoder(new BCryptPasswordEncoder());
+      auth.ldapAuthentication()
+              .userSearchBase("ou=people")
+              .userSearchFilter("(uid={0})")
+              .groupSearchBase("ou=groups")
+              .groupSearchFilter("member={0}")
+              .passwordCompare()
+              .passwordEncoder(new BCryptPasswordEncoder())
+              .passwordAttribute("passcode");
+      //in book it is shown that ldapAuthentication() can be extended by the line below
+      //yet it seems that contextSource() is exit method, and there can be no other methods after it
+      //which is the same case with passwordCompare(), so we can't really use both
+      //   .contextSource().root("dc=tacocloud,dc=com").ldif("classpath:users.ldif")
    }
 }
